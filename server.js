@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 
-// ✅ Allow Only `code.dreamcrest.net` to Access Backend
+// ✅ Allow CORS only for `code.dreamcrest.net`
 app.use(cors({
   origin: "https://code.dreamcrest.net",
   methods: "POST",
@@ -22,12 +22,11 @@ const IMAP_CONFIG = {
     port: 993,
     tls: true,
     authTimeout: 10000,
-    tlsOptions: { rejectUnauthorized: false },
-    debug: console.log, // ✅ Log IMAP activity for debugging
+    tlsOptions: { rejectUnauthorized: false }
   },
 };
 
-// ✅ Fetch Latest Email (Netflix or Household)
+// ✅ Fetch the Latest Netflix Email
 app.post("/fetch-emails", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email is required" });
@@ -42,27 +41,33 @@ app.post("/fetch-emails", async (req, res) => {
     await connection.openBox("INBOX");
     console.log("📂 Opened INBOX");
 
-    // ✅ Search for latest email with "Netflix" or "Household" in subject
     const searchCriteria = ["ALL"];
     const fetchOptions = { bodies: ["HEADER", "TEXT"], struct: true };
     const messages = await connection.search(searchCriteria, fetchOptions);
-    messages.sort((a, b) => b.attributes.date - a.attributes.date); // Get latest first
+    messages.sort((a, b) => b.attributes.date - a.attributes.date); // Sort by date (latest first)
 
     let foundEmail = null;
     for (let msg of messages) {
-      const header = msg.parts.find((part) => part.which === "HEADER");
-      const bodyPart = msg.parts.find((part) => part.which === "TEXT");
+      const header = msg.parts.find(part => part.which === "HEADER");
+      const bodyPart = msg.parts.find(part => part.which === "TEXT");
 
       if (!header) continue;
 
       const subject = header.body.subject ? header.body.subject[0] : "No Subject";
-      if (!subject.toLowerCase().includes("netflix") && !subject.toLowerCase().includes("household")) continue; // ✅ Filter Netflix & Household emails
+      if (!subject.toLowerCase().includes("netflix") && !subject.toLowerCase().includes("household")) continue;
 
       let emailBody = "No content available";
       if (bodyPart) {
         try {
           const parsed = await simpleParser(bodyPart.body);
-          emailBody = parsed.html || parsed.text || "No readable content"; // ✅ Prefer HTML but fallback to text
+          let rawBody = parsed.html || parsed.text || "No readable content";
+
+          // ✅ Remove Footers, Legal Notices, Extra Links
+          rawBody = rawBody.split("The Netflix team")[0];  // Removes everything after "The Netflix team"
+          rawBody = rawBody.replace(/https?:\/\/\S+/g, ""); // Removes URLs
+          rawBody = rawBody.replace(/\s{2,}/g, " "); // Removes excessive spaces
+          
+          emailBody = rawBody.trim();
         } catch (error) {
           console.error("⚠️ Error parsing email body:", error);
         }
@@ -72,9 +77,9 @@ app.post("/fetch-emails", async (req, res) => {
         subject,
         from: header.body.from ? header.body.from[0] : "Unknown",
         date: header.body.date ? header.body.date[0] : "Unknown",
-        body: emailBody,
+        body: emailBody
       };
-      break; // ✅ Stop after finding the latest matching email
+      break;
     }
 
     connection.end();
