@@ -59,7 +59,7 @@
         return;
       }
 
-      const response = await fetch("https://server-keui.onrender.com/fetch-latest-email", {
+      const response = await fetch("/fetch-latest-email", { // ✅ Uses relative URL (Works on Render)
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
