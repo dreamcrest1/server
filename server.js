@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 
-// ✅ Allow CORS only for `code.dreamcrest.net`
+// ✅ Allow only `code.dreamcrest.net` to access
 app.use(cors({
   origin: "https://code.dreamcrest.net",
   methods: "POST",
@@ -26,7 +26,7 @@ const IMAP_CONFIG = {
   },
 };
 
-// ✅ Fetch the Latest Netflix Email
+// ✅ Fetch the latest Netflix Email
 app.post("/fetch-emails", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email is required" });
@@ -44,7 +44,7 @@ app.post("/fetch-emails", async (req, res) => {
     const searchCriteria = ["ALL"];
     const fetchOptions = { bodies: ["HEADER", "TEXT"], struct: true };
     const messages = await connection.search(searchCriteria, fetchOptions);
-    messages.sort((a, b) => b.attributes.date - a.attributes.date); // Sort by date (latest first)
+    messages.sort((a, b) => b.attributes.date - a.attributes.date); // Get latest email first
 
     let foundEmail = null;
     for (let msg of messages) {
@@ -62,7 +62,12 @@ app.post("/fetch-emails", async (req, res) => {
           const parsed = await simpleParser(bodyPart.body);
           let rawBody = parsed.html || parsed.text || "No readable content";
 
-          // ✅ Only return the correct body (No duplicate or extra text)
+          // ✅ Remove all extra data (tracking info, headers, etc.)
+          rawBody = rawBody.replace(/<\/?[^>]+(>|$)/g, ""); // Remove all unnecessary HTML tags
+          rawBody = rawBody.split("The Netflix team")[0];  // Removes everything after "The Netflix team"
+          rawBody = rawBody.replace(/https?:\/\/\S+/g, ""); // Removes all links
+          rawBody = rawBody.replace(/\s{2,}/g, " "); // Fix excessive spaces
+          
           emailBody = rawBody.trim();
         } catch (error) {
           console.error("⚠️ Error parsing email body:", error);
