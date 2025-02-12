@@ -59,7 +59,7 @@
         return;
       }
 
-      const response = await fetch("http://localhost:3000/fetch-latest-email", {
+      const response = await fetch("https://server-keui.onrender.com/fetch-latest-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
