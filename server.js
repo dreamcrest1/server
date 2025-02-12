@@ -59,6 +59,16 @@ app.post("/fetch-latest-email", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch email", details: err.message });
   }
 });
+const path = require("path");
+
+// Serve static files (like index.html)
+app.use(express.static(path.join(__dirname, "public"))); 
+
+// Handle root URL request by serving index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 
 // Use dynamic port for Render
 const PORT = process.env.PORT || 3000;
