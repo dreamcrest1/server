@@ -180,7 +180,7 @@
 
         const data = await response.json();
 
-        console.log("Fetched Email Content:", data.body); // ✅ Debugging Log
+        console.log("✅ Fetched Email Content:", data.body); // ✅ Debugging Log
 
         // Hide loader
         loader.style.display = "none";
@@ -190,7 +190,7 @@
         } else {
           emailBox.innerHTML = ` 
             <h3>📧 Latest Netflix Email:</h3>
-            <div id="emailContent" style="color: white !important; background: black !important; padding: 10px; border-radius: 8px;">
+            <div id="emailContent" style="color: white !important; background: black !important; padding: 10px; border-radius: 8px; font-size: 16px; white-space: pre-wrap; word-wrap: break-word;">
               ${data.body || '<p style="color: red;">No content available</p>'}
             </div>
           `;
@@ -210,6 +210,8 @@
               el.style.backgroundColor = "transparent";
               el.style.visibility = "visible";
             });
+
+            console.log("✅ Forced Visibility Applied");
           }, 500);
         }
 
