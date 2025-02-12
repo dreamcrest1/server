@@ -62,11 +62,7 @@ app.post("/fetch-emails", async (req, res) => {
           const parsed = await simpleParser(bodyPart.body);
           let rawBody = parsed.html || parsed.text || "No readable content";
 
-          // ✅ Remove Footers, Legal Notices, Extra Links
-          rawBody = rawBody.split("The Netflix team")[0];  // Removes everything after "The Netflix team"
-          rawBody = rawBody.replace(/https?:\/\/\S+/g, ""); // Removes URLs
-          rawBody = rawBody.replace(/\s{2,}/g, " "); // Removes excessive spaces
-          
+          // ✅ Only return the correct body (No duplicate or extra text)
           emailBody = rawBody.trim();
         } catch (error) {
           console.error("⚠️ Error parsing email body:", error);
