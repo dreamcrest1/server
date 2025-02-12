@@ -66,11 +66,6 @@
       overflow-y: auto; /* Enables scrolling if content is large */
     }
 
-    .fade-out {
-      opacity: 0;
-      transition: opacity 0.5s ease-out;
-    }
-
     /* Responsive Design */
     @media (max-width: 480px) {
       .container {
@@ -87,7 +82,7 @@
   <div class="container">
     <h2>Fetch Netflix Email</h2>
 
-    <!-- Input Section -->
+    <!-- Input Section (Will Now Stay Visible) -->
     <div id="inputSection">
       <input type="email" id="emailInput" placeholder="Enter your email">
       <button onclick="fetchLatestEmail()">Fetch Latest Email</button>
@@ -100,7 +95,6 @@
   <script>
     async function fetchLatestEmail() {
       const email = document.getElementById("emailInput").value;
-      const inputSection = document.getElementById("inputSection");
       const emailBox = document.getElementById("emailBox");
 
       if (!email) {
@@ -120,18 +114,12 @@
       if (data.error) {
         alert(`Error: ${data.error}`);
       } else {
-        // Fade out input fields but keep structure intact
-        inputSection.classList.add("fade-out");
-
-        // Show email content in a styled box
-        setTimeout(() => {
-          inputSection.style.display = "none"; // Hide input section smoothly
-          emailBox.style.display = "block";
-          emailBox.innerHTML = ` 
-            <h3>📧 Latest Netflix Email:</h3>
-            <p>${data.body || 'No content available'}</p>
-          `;
-        }, 500); // Delay hiding input for smooth transition
+        // Show email content but KEEP input section visible
+        emailBox.style.display = "block";
+        emailBox.innerHTML = ` 
+          <h3>📧 Latest Netflix Email:</h3>
+          <p>${data.body || 'No content available'}</p>
+        `;
       }
     }
   </script>
