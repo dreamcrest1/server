@@ -87,16 +87,17 @@
       border-left: 4px solid #ff4c4c;
       transition: all 0.5s ease-in-out;
       opacity: 0;
-      color: white !important;  /* ✅ Forces visible text */
-      filter: brightness(100%) contrast(100%); /* ✅ Ensures visibility */
     }
 
     #emailBox.show {
       opacity: 1;
     }
 
+    /* Force visibility of email content */
     #emailBox * {
-      color: white !important; /* ✅ Ensures all text inside is visible */
+      color: white !important;
+      background: transparent !important;
+      visibility: visible !important;
     }
 
     /* Loader Animation */
@@ -179,10 +180,25 @@
         } else {
           emailBox.innerHTML = `
             <h3>📧 Latest Netflix Email:</h3>
-            <div style="color: white; background: #1e1e1e; padding: 10px; border-radius: 8px;">
+            <div id="emailContent" style="color: white !important; background: #1e1e1e; padding: 10px; border-radius: 8px; word-wrap: break-word;">
               ${data.body || '<p style="color: red;">No content available</p>'}
             </div>
           `;
+
+          // Force visibility of all elements inside the email
+          setTimeout(() => {
+            const emailContent = document.getElementById("emailContent");
+
+            // Remove all inline `display: none;` styles
+            const hiddenElements = emailContent.querySelectorAll('[style*="display: none"]');
+            hiddenElements.forEach(el => el.style.display = "block");
+
+            // Ensure all text inside the email is visible
+            emailContent.querySelectorAll('*').forEach(el => {
+              el.style.color = "white";
+              el.style.backgroundColor = "transparent"; // Remove any forced background color
+            });
+          }, 500);
         }
 
         // Show the email box with animation
