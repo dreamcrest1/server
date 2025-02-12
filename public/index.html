@@ -41,7 +41,7 @@
     #emailBox {
       display: none;
       background: #fff;
-      padding: 10px;
+      padding: 0;
       border-radius: 5px;
       border: 1px solid #ccc;
       margin-top: 10px;
@@ -53,19 +53,19 @@
     }
 
     #emailContent {
-      padding: 5px;
+      padding: 0;
       border-radius: 5px;
       max-width: 100%;
       overflow-wrap: break-word;
       word-wrap: break-word;
       background-color: #f9f9f9;
       color: #333;
-      margin-top: 0; /* Removes extra gap */
+      margin: 0;
     }
 
     .email-header {
-      margin-bottom: 5px;
-      padding: 8px;
+      margin-bottom: 0;
+      padding: 5px;
       background: red;
       color: white;
       border-radius: 5px;
@@ -140,7 +140,7 @@
           emailContent.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ Error: ${data.error}</p>`;
         } else {
           emailContent.innerHTML = `
-            <div>${data.body || '<p style="color: red;">No content available</p>'}</div>
+            <div style="margin: 0; padding: 0;">${data.body || '<p style="color: red;">No content available</p>'}</div>
           `;
         }
 
@@ -157,6 +157,8 @@
             el.style.color = "#333";
             el.style.backgroundColor = "transparent";
             el.style.visibility = "visible";
+            el.style.margin = "0";
+            el.style.padding = "0";
           });
 
           console.log("✅ Forced Visibility Applied");
