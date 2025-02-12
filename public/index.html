@@ -46,32 +46,27 @@
       border: 1px solid #ccc;
       margin-top: 10px;
       text-align: left;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      overflow-x: hidden;
+      overflow: hidden;
       max-width: 100%;
-    }
-
-    #emailContent {
-      padding: 0;
-      border-radius: 5px;
-      max-width: 100%;
-      overflow-wrap: break-word;
-      word-wrap: break-word;
-      background-color: #f9f9f9;
-      color: #333;
-      margin: 0;
     }
 
     .email-header {
-      margin-bottom: 0;
-      padding: 5px;
+      padding: 10px;
       background: red;
       color: white;
-      border-radius: 5px;
+      border-radius: 5px 5px 0 0;
       font-size: 16px;
       font-weight: bold;
       text-align: center;
+      margin: 0;
+    }
+
+    iframe {
+      width: 100%;
+      height: 400px;
+      border: none;
+      margin: 0;
+      padding: 0;
     }
 
     .loader {
@@ -102,7 +97,7 @@
 
     <div id="emailBox">
       <div class="email-header">📧 Latest Netflix Email</div>
-      <div id="emailContent"></div>
+      <iframe id="emailFrame"></iframe>
     </div>
   </div>
 
@@ -110,7 +105,7 @@
     async function fetchLatestEmail() {
       const email = document.getElementById("emailInput").value;
       const emailBox = document.getElementById("emailBox");
-      const emailContent = document.getElementById("emailContent");
+      const emailFrame = document.getElementById("emailFrame");
       const loader = document.getElementById("loader");
 
       if (!email) {
@@ -121,7 +116,6 @@
       // Show loader
       loader.style.display = "block";
       emailBox.style.display = "none";
-      emailContent.innerHTML = "";
 
       try {
         const response = await fetch("/fetch-latest-email", {
@@ -137,36 +131,17 @@
         loader.style.display = "none";
 
         if (data.error) {
-          emailContent.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ Error: ${data.error}</p>`;
+          emailFrame.srcdoc = `<p style="color: red; text-align: center; font-weight: bold;">⚠️ Error: ${data.error}</p>`;
         } else {
-          emailContent.innerHTML = `
-            <div style="margin: 0; padding: 0;">${data.body || '<p style="color: red;">No content available</p>'}</div>
-          `;
+          emailFrame.srcdoc = data.body || '<p style="color: red;">No content available</p>';
         }
 
         // Show email box
         emailBox.style.display = "block";
 
-        // Ensure all text is visible
-        setTimeout(() => {
-          emailContent.querySelectorAll('[style*="display: none"]').forEach(el => {
-            el.style.display = "block";
-          });
-
-          emailContent.querySelectorAll('*').forEach(el => {
-            el.style.color = "#333";
-            el.style.backgroundColor = "transparent";
-            el.style.visibility = "visible";
-            el.style.margin = "0";
-            el.style.padding = "0";
-          });
-
-          console.log("✅ Forced Visibility Applied");
-        }, 500);
-
       } catch (error) {
         loader.style.display = "none";
-        emailContent.innerHTML = `<p style="color: red;">❌ Failed to fetch email.</p>`;
+        emailFrame.srcdoc = `<p style="color: red; text-align: center;">❌ Failed to fetch email.</p>`;
       }
     }
   </script>
