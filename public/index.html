@@ -60,6 +60,18 @@
       word-wrap: break-word;
       background-color: #f9f9f9;
       color: #333;
+      margin-top: 0; /* Removes extra gap */
+    }
+
+    .email-header {
+      margin-bottom: 5px;
+      padding: 8px;
+      background: red;
+      color: white;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
     }
 
     .loader {
@@ -89,7 +101,7 @@
     <div class="loader" id="loader"></div>
 
     <div id="emailBox">
-      <h3 style="margin-bottom: 5px;">📧 Latest Netflix Email:</h3>
+      <div class="email-header">📧 Latest Netflix Email</div>
       <div id="emailContent"></div>
     </div>
   </div>
