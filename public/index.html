@@ -3,155 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Body Fetcher</title>
+  <title>Email Fetcher</title>
   <style>
-    /* General Styling */
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
       margin: 0;
       padding: 20px;
     }
 
-    /* Main Container */
     .container {
+      max-width: 500px;
+      background: white;
+      padding: 20px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    input, button {
       width: 100%;
-      max-width: 450px;
-      background: #2a2a2a;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
-      text-align: center;
-      color: white;
-      transition: transform 0.3s ease;
-    }
-
-    .container:hover {
-      transform: scale(1.02);
-    }
-
-    /* Input & Button */
-    input {
-      width: 90%;
-      padding: 12px;
+      padding: 10px;
       margin: 10px 0;
       border-radius: 5px;
-      border: 1px solid #ff4c4c;
-      background: #333;
-      color: white;
+      border: 1px solid #ccc;
       font-size: 16px;
-      transition: all 0.3s;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #ff1a1a;
-      box-shadow: 0 0 5px rgba(255, 26, 26, 0.5);
     }
 
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 5px;
-      border: none;
-      background-color: #ff1a1a;
+      background-color: red;
       color: white;
-      font-size: 18px;
       cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+      font-size: 16px;
     }
 
-    button:hover {
-      background-color: #e60000;
-      transform: scale(1.05);
+    #emailBox {
+      display: none;
+      background: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      text-align: left;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
 
-    /* Loader Animation */
     .loader {
       display: none;
-      border: 5px solid #333;
-      border-top: 5px solid #ff1a1a;
+      margin: 10px auto;
+      border: 4px solid #ccc;
+      border-top: 4px solid red;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       animation: spin 1s linear infinite;
-      margin: 20px auto;
     }
 
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
-    /* Email Display Box */
-    #emailBox {
-      display: none;
-      background: #1e1e1e;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
-      margin-top: 20px;
-      width: 100%;
-      word-wrap: break-word;
-      text-align: left;
-      max-height: 400px;
-      overflow-y: auto;
-      border-left: 4px solid #ff4c4c;
-      transition: all 0.5s ease-in-out;
-      opacity: 0;
-    }
-
-    #emailBox.show {
-      opacity: 1;
-      display: block;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Ensure all email content is visible */
-    #emailContent * {
-      color: white !important;
-      background: transparent !important;
-      visibility: visible !important;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 480px) {
-      .container {
-        max-width: 95%;
-      }
-
-      input, button {
-        font-size: 14px;
-      }
-    }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>📩 Fetch Netflix Email</h2>
+    <h2>Fetch Netflix Email</h2>
+    <input type="email" id="emailInput" placeholder="Enter your email">
+    <button onclick="fetchLatestEmail()">Fetch Latest Email</button>
 
-    <!-- Input Section (Stays Visible) -->
-    <div id="inputSection">
-      <input type="email" id="emailInput" placeholder="Enter your email">
-      <button onclick="fetchLatestEmail()">Fetch Latest Email</button>
-    </div>
-
-    <!-- Loader -->
     <div class="loader" id="loader"></div>
-
-    <!-- Email Display Box -->
     <div id="emailBox"></div>
   </div>
 
@@ -166,9 +89,9 @@
         return;
       }
 
-      // Show loader and clear previous email content
+      // Show loader
       loader.style.display = "block";
-      emailBox.style.opacity = "0";
+      emailBox.style.display = "none";
       emailBox.innerHTML = "";
 
       try {
@@ -179,8 +102,7 @@
         });
 
         const data = await response.json();
-
-        console.log("✅ Fetched Email Content:", data.body); // ✅ Debugging Log
+        console.log("Fetched Email Content:", data.body); // Debugging Log
 
         // Hide loader
         loader.style.display = "none";
@@ -188,35 +110,34 @@
         if (data.error) {
           emailBox.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ Error: ${data.error}</p>`;
         } else {
-          emailBox.innerHTML = ` 
+          emailBox.innerHTML = `
             <h3>📧 Latest Netflix Email:</h3>
-            <div id="emailContent" style="color: white !important; background: black !important; padding: 10px; border-radius: 8px; font-size: 16px; white-space: pre-wrap; word-wrap: break-word;">
-              ${data.body || '<p style="color: red;">No content available</p>'}
-            </div>
+            <div id="emailContent">${data.body || 'No content available'}</div>
           `;
-
-          // Force visibility of all email content
-          setTimeout(() => {
-            const emailContent = document.getElementById("emailContent");
-
-            // Remove hidden elements
-            emailContent.querySelectorAll('[style*="display: none"]').forEach(el => {
-              el.style.display = "block";
-            });
-
-            // Force text visibility
-            emailContent.querySelectorAll('*').forEach(el => {
-              el.style.color = "white";
-              el.style.backgroundColor = "transparent";
-              el.style.visibility = "visible";
-            });
-
-            console.log("✅ Forced Visibility Applied");
-          }, 500);
         }
 
-        // Show the email box with animation
-        emailBox.classList.add("show");
+        // Show email box
+        emailBox.style.display = "block";
+
+        // Ensure all text is visible
+        setTimeout(() => {
+          const emailContent = document.getElementById("emailContent");
+
+          // Remove hidden elements
+          emailContent.querySelectorAll('[style*="display: none"]').forEach(el => {
+            el.style.display = "block";
+          });
+
+          // Force text visibility
+          emailContent.querySelectorAll('*').forEach(el => {
+            el.style.color = "black";
+            el.style.backgroundColor = "white";
+            el.style.visibility = "visible";
+          });
+
+          console.log("✅ Forced Visibility Applied");
+        }, 500);
+
       } catch (error) {
         loader.style.display = "none";
         emailBox.innerHTML = `<p style="color: red;">❌ Failed to fetch email.</p>`;
