@@ -14,65 +14,108 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
+      padding: 20px;
     }
+    
     .container {
-      width: 90%;
+      width: 100%;
       max-width: 400px;
       background: white;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
     }
+
+    .hidden {
+      display: none;
+    }
+
     input, button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 16px;
     }
+
     button {
       background-color: #4CAF50;
       color: white;
       font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
     }
+
     button:hover {
       background-color: #45a049;
     }
-    #emailBody {
+
+    #emailBox {
+      display: none; /* Hidden initially */
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       margin-top: 20px;
+      width: 100%;
+      word-wrap: break-word;
+      text-align: left;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
+      .container {
+        max-width: 90%;
+      }
+
+      input, button {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="inputContainer">
     <h2>Fetch Netflix Email</h2>
     <input type="email" id="emailInput" placeholder="Enter your email">
     <button onclick="fetchLatestEmail()">Fetch Latest Email</button>
-    <div id="emailBody"></div>
   </div>
+
+  <div id="emailBox"></div>
 
   <script>
     async function fetchLatestEmail() {
       const email = document.getElementById("emailInput").value;
+      const inputContainer = document.getElementById("inputContainer");
+      const emailBox = document.getElementById("emailBox");
+
       if (!email) {
         alert("Please enter your email!");
         return;
       }
 
-      const response = await fetch("/fetch-latest-email", { // ✅ Uses relative URL (Works on Render)
+      const response = await fetch("/fetch-latest-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
-      const emailBodyDiv = document.getElementById("emailBody");
-      emailBodyDiv.innerHTML = "";
 
       if (data.error) {
-        emailBodyDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+        alert(`Error: ${data.error}`);
       } else {
-        emailBodyDiv.innerHTML = data.body || '<p>No content available</p>';
+        // Hide input container
+        inputContainer.classList.add("hidden");
+
+        // Show email content in a styled box
+        emailBox.style.display = "block";
+        emailBox.innerHTML = `
+          <h3>📧 Email Content:</h3>
+          <p>${data.body || 'No content available'}</p>
+        `;
       }
     }
   </script>
