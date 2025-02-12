@@ -62,6 +62,13 @@
       width: 100%;
       word-wrap: break-word;
       text-align: left;
+      max-height: 400px;
+      overflow-y: auto; /* Enables scrolling if content is large */
+    }
+
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
     }
 
     /* Responsive Design */
@@ -77,18 +84,23 @@
   </style>
 </head>
 <body>
-  <div class="container" id="inputContainer">
+  <div class="container">
     <h2>Fetch Netflix Email</h2>
-    <input type="email" id="emailInput" placeholder="Enter your email">
-    <button onclick="fetchLatestEmail()">Fetch Latest Email</button>
-  </div>
 
-  <div id="emailBox"></div>
+    <!-- Input Section -->
+    <div id="inputSection">
+      <input type="email" id="emailInput" placeholder="Enter your email">
+      <button onclick="fetchLatestEmail()">Fetch Latest Email</button>
+    </div>
+
+    <!-- Email Display Box -->
+    <div id="emailBox"></div>
+  </div>
 
   <script>
     async function fetchLatestEmail() {
       const email = document.getElementById("emailInput").value;
-      const inputContainer = document.getElementById("inputContainer");
+      const inputSection = document.getElementById("inputSection");
       const emailBox = document.getElementById("emailBox");
 
       if (!email) {
@@ -96,6 +108,7 @@
         return;
       }
 
+      // Fetch email data
       const response = await fetch("/fetch-latest-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -107,15 +120,18 @@
       if (data.error) {
         alert(`Error: ${data.error}`);
       } else {
-        // Hide input container
-        inputContainer.classList.add("hidden");
+        // Fade out input fields but keep structure intact
+        inputSection.classList.add("fade-out");
 
         // Show email content in a styled box
-        emailBox.style.display = "block";
-        emailBox.innerHTML = `
-          <h3>📧 Email Content:</h3>
-          <p>${data.body || 'No content available'}</p>
-        `;
+        setTimeout(() => {
+          inputSection.style.display = "none"; // Hide input section smoothly
+          emailBox.style.display = "block";
+          emailBox.innerHTML = `
+            <h3>📧 Latest Netflix Email:</h3>
+            <p>${data.body || 'No content available'}</p>
+          `;
+        }, 500); // Delay hiding input for smooth transition
       }
     }
   </script>
